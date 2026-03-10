@@ -18,7 +18,7 @@ export default async function handler(req, res) {
         'anthropic-version': '2023-06-01',
       },
       body: JSON.stringify({
-        model: 'claude-3-5-sonnet-20241022',
+        model: 'claude-3-haiku-20240307',
         max_tokens: 1500,
         messages: [{
           role: 'user',
@@ -54,7 +54,7 @@ Use ONLY these exact markers. Keep it direct and jargon-free.`,
     });
 
     const data = await response.json();
-    if (data.error) return res.status(500).json({ error: JSON.stringify(data.error) });
+    if (data.error) return res.status(500).json({ error: data.error.message });
     const text = data.content.map((b) => b.text || '').join('\n');
 
     // Parse using exact markers
