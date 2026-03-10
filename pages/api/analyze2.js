@@ -46,7 +46,7 @@ List practical actionable steps this tradie should take.
 [CONCLUSION]
 Write a plain-English wrap-up and the #1 thing they should focus on.
 
-Use ONLY these exact markers. Keep it direct and jargon-free.`,
+Use ONLY these exact markers. Keep it direct and jargon-free. Pay particular attention to unusually low expenses that may indicate underinvestment, such as technology, subscriptions, office costs, or marketing.`,
             },
           ],
         }],
