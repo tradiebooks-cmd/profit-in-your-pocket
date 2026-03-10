@@ -10,12 +10,58 @@ const CREAM = "#FFF8F0";
 const TEXT = "#E8EEF8";
 const MUTED = "#7A90B8";
 
+// Renders markdown-like text: **bold**, ## headings, - bullets
+function renderContent(text) {
+  if (!text) return null;
+  const lines = text.split('\n');
+  return lines.map((line, i) => {
+    const trimmed = line.trim();
+    if (!trimmed) return <br key={i} />;
 
+    // ## Heading
+    if (trimmed.startsWith('## ')) {
+      const content = trimmed.replace(/^## /, '');
+      return (
+        <p key={i} style={{ color: ORANGE, fontWeight: 700, marginTop: 12, marginBottom: 4 }}>
+          {renderInline(content)}
+        </p>
+      );
+    }
 
-  if (sections.length === 0) {
-    sections.push({ label: "Analysis", content: text.trim() });
-  }
-  return sections;
+    // - bullet point
+    if (trimmed.startsWith('- ')) {
+      const content = trimmed.replace(/^- /, '');
+      return (
+        <div key={i} style={{ display: 'flex', gap: 8, marginBottom: 6 }}>
+          <span style={{ color: ORANGE, opacity: 0.6, flexShrink: 0 }}>→</span>
+          <span>{renderInline(content)}</span>
+        </div>
+      );
+    }
+
+    // numbered list
+    if (/^\d+\.\s/.test(trimmed)) {
+      const content = trimmed.replace(/^\d+\.\s/, '');
+      const num = trimmed.match(/^(\d+)\./)[1];
+      return (
+        <div key={i} style={{ display: 'flex', gap: 8, marginBottom: 6 }}>
+          <span style={{ color: ORANGE, opacity: 0.6, flexShrink: 0, minWidth: 18 }}>{num}.</span>
+          <span>{renderInline(content)}</span>
+        </div>
+      );
+    }
+
+    return <p key={i} style={{ marginBottom: 8 }}>{renderInline(trimmed)}</p>;
+  });
+}
+
+function renderInline(text) {
+  const parts = text.split(/\*\*(.*?)\*\*/g);
+  return parts.map((part, i) =>
+    i % 2 === 1
+      ? <strong key={i} style={{ color: CREAM, fontWeight: 600 }}>{part}</strong>
+      : part
+  );
 }
 
 const HELMET_SVG = (color = ORANGE) => (
@@ -96,11 +142,7 @@ export default function App() {
           font-family: 'Barlow', sans-serif;
           min-height: 100vh;
         }
-        .app {
-          max-width: 820px;
-          margin: 0 auto;
-          padding: 0 20px 80px;
-        }
+        .app { max-width: 820px; margin: 0 auto; padding: 0 20px 80px; }
         .header {
           background: ${NAVY};
           margin: 0 -20px 48px;
@@ -124,12 +166,7 @@ export default function App() {
           background: radial-gradient(circle, rgba(238,113,36,0.08) 0%, transparent 70%);
           pointer-events: none;
         }
-        .logo-row {
-          display: flex;
-          align-items: center;
-          gap: 14px;
-          margin-bottom: 22px;
-        }
+        .logo-row { display: flex; align-items: center; gap: 14px; margin-bottom: 22px; }
         .logo-icon {
           width: 48px; height: 48px;
           background: rgba(238,113,36,0.15);
@@ -143,10 +180,7 @@ export default function App() {
           letter-spacing: 0.12em; text-transform: uppercase;
           color: ${ORANGE}; line-height: 1;
         }
-        .brand-sub {
-          font-size: 10px; letter-spacing: 0.18em;
-          text-transform: uppercase; color: ${MUTED}; margin-top: 3px;
-        }
+        .brand-sub { font-size: 10px; letter-spacing: 0.18em; text-transform: uppercase; color: ${MUTED}; margin-top: 3px; }
         .page-title {
           font-family: 'Barlow Condensed', sans-serif;
           font-size: clamp(38px, 6vw, 60px);
@@ -154,21 +188,14 @@ export default function App() {
           text-transform: uppercase; color: ${CREAM};
         }
         .page-title .highlight { color: ${ORANGE}; display: block; }
-        .page-tagline {
-          margin-top: 12px; font-size: 14px;
-          color: ${MUTED}; font-weight: 300;
-          max-width: 440px; line-height: 1.6;
-        }
+        .page-tagline { margin-top: 12px; font-size: 14px; color: ${MUTED}; font-weight: 300; max-width: 440px; line-height: 1.6; }
         .upload-zone {
           border: 2px dashed ${NAVY_LIGHT};
           border-radius: 6px; padding: 52px 32px;
           text-align: center; cursor: pointer;
           transition: all 0.2s; background: ${NAVY};
         }
-        .upload-zone:hover, .upload-zone.drag {
-          border-color: ${ORANGE};
-          background: rgba(238,113,36,0.05);
-        }
+        .upload-zone:hover, .upload-zone.drag { border-color: ${ORANGE}; background: rgba(238,113,36,0.05); }
         .upload-icon-wrap {
           width: 64px; height: 64px;
           background: rgba(238,113,36,0.1);
@@ -177,11 +204,7 @@ export default function App() {
           margin: 0 auto 20px;
           border: 1.5px solid rgba(238,113,36,0.25);
         }
-        .upload-label {
-          font-family: 'Barlow Condensed', sans-serif;
-          font-size: 22px; font-weight: 700;
-          text-transform: uppercase; color: ${CREAM}; margin-bottom: 8px;
-        }
+        .upload-label { font-family: 'Barlow Condensed', sans-serif; font-size: 22px; font-weight: 700; text-transform: uppercase; color: ${CREAM}; margin-bottom: 8px; }
         .upload-hint { font-size: 12px; color: ${MUTED}; }
         .file-selected {
           margin-top: 20px;
@@ -201,60 +224,26 @@ export default function App() {
           transition: all 0.15s;
           display: flex; align-items: center; justify-content: center; gap: 10px;
         }
-        .analyze-btn:hover:not(:disabled) {
-          background: #F5861A;
-          transform: translateY(-2px);
-          box-shadow: 0 8px 24px rgba(238,113,36,0.35);
-        }
+        .analyze-btn:hover:not(:disabled) { background: #F5861A; transform: translateY(-2px); box-shadow: 0 8px 24px rgba(238,113,36,0.35); }
         .analyze-btn:disabled { opacity: 0.35; cursor: not-allowed; }
         .loading { text-align: center; padding: 60px 0; }
-        .hard-hat-spin {
-          font-size: 40px; display: block;
-          margin: 0 auto 16px;
-          animation: rock 1.2s ease-in-out infinite;
-        }
-        @keyframes rock {
-          0%, 100% { transform: rotate(-8deg); }
-          50% { transform: rotate(8deg); }
-        }
-        .loading-text {
-          font-family: 'Barlow Condensed', sans-serif;
-          font-size: 18px; font-weight: 700;
-          letter-spacing: 0.1em; text-transform: uppercase; color: ${MUTED};
-        }
+        .hard-hat-spin { font-size: 40px; display: block; margin: 0 auto 16px; animation: rock 1.2s ease-in-out infinite; }
+        @keyframes rock { 0%, 100% { transform: rotate(-8deg); } 50% { transform: rotate(8deg); } }
+        .loading-text { font-family: 'Barlow Condensed', sans-serif; font-size: 18px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: ${MUTED}; }
         .loading-sub { font-size: 12px; color: rgba(122,144,184,0.5); margin-top: 6px; }
         .results { animation: slideUp 0.4s ease; }
-        @keyframes slideUp {
-          from { opacity: 0; transform: translateY(16px); }
-          to { opacity: 1; transform: translateY(0); }
-        }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
         .results-header {
           background: linear-gradient(135deg, ${NAVY_MID}, ${NAVY});
           border-left: 4px solid ${ORANGE};
           border-radius: 0 6px 6px 0;
           padding: 20px 24px; margin-bottom: 20px;
-          display: flex; align-items: center;
-          justify-content: space-between; gap: 16px;
+          display: flex; align-items: center; justify-content: space-between; gap: 16px;
         }
-        .results-title {
-          font-family: 'Barlow Condensed', sans-serif;
-          font-size: 22px; font-weight: 800;
-          letter-spacing: 0.05em; text-transform: uppercase; color: ${CREAM};
-        }
-        .results-badge {
-          background: rgba(238,113,36,0.15);
-          border: 1px solid rgba(238,113,36,0.3);
-          color: ${ORANGE}; font-size: 11px; font-weight: 600;
-          letter-spacing: 0.1em; text-transform: uppercase;
-          padding: 4px 10px; border-radius: 2px; white-space: nowrap;
-        }
+        .results-title { font-family: 'Barlow Condensed', sans-serif; font-size: 22px; font-weight: 800; letter-spacing: 0.05em; text-transform: uppercase; color: ${CREAM}; }
+        .results-badge { background: rgba(238,113,36,0.15); border: 1px solid rgba(238,113,36,0.3); color: ${ORANGE}; font-size: 11px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; padding: 4px 10px; border-radius: 2px; white-space: nowrap; }
         .results-filename { font-size: 11px; color: ${MUTED}; margin-top: 4px; font-weight: 300; }
-        .section {
-          background: ${NAVY};
-          border: 1px solid ${NAVY_LIGHT};
-          border-radius: 6px; padding: 22px 24px;
-          margin-bottom: 14px; transition: border-color 0.2s;
-        }
+        .section { background: ${NAVY}; border: 1px solid ${NAVY_LIGHT}; border-radius: 6px; padding: 22px 24px; margin-bottom: 14px; transition: border-color 0.2s; }
         .section:hover { border-color: rgba(238,113,36,0.3); }
         .section-label {
           font-family: 'Barlow Condensed', sans-serif;
@@ -263,36 +252,19 @@ export default function App() {
           color: ${ORANGE}; margin-bottom: 12px;
           display: flex; align-items: center; gap: 8px;
         }
-        .section-label::after {
-          content: ''; flex: 1; height: 1px;
-          background: rgba(238,113,36,0.15);
-        }
-        .section-content {
-          font-size: 14px; color: #9EB3D0;
-          line-height: 1.75; white-space: pre-wrap;
-        }
+        .section-label::after { content: ''; flex: 1; height: 1px; background: rgba(238,113,36,0.15); }
+        .section-content { font-size: 14px; color: #9EB3D0; line-height: 1.75; }
         .reset-btn {
           margin-top: 28px; background: transparent;
           border: 1.5px solid ${NAVY_LIGHT}; color: ${MUTED};
           font-family: 'Barlow Condensed', sans-serif;
           font-size: 14px; font-weight: 600;
           letter-spacing: 0.1em; text-transform: uppercase;
-          padding: 12px 24px; border-radius: 4px; cursor: pointer;
-          transition: all 0.15s;
+          padding: 12px 24px; border-radius: 4px; cursor: pointer; transition: all 0.15s;
         }
         .reset-btn:hover { border-color: ${ORANGE}; color: ${ORANGE}; }
-        .error-box {
-          margin-top: 16px;
-          background: rgba(238,60,60,0.07);
-          border: 1px solid rgba(238,60,60,0.2);
-          border-radius: 4px; padding: 14px 18px;
-          font-size: 13px; color: #FF9090; line-height: 1.6;
-        }
-        .footer {
-          margin-top: 56px; padding-top: 24px;
-          border-top: 1px solid ${NAVY_LIGHT};
-          display: flex; align-items: center; gap: 10px;
-        }
+        .error-box { margin-top: 16px; background: rgba(238,60,60,0.07); border: 1px solid rgba(238,60,60,0.2); border-radius: 4px; padding: 14px 18px; font-size: 13px; color: #FF9090; line-height: 1.6; }
+        .footer { margin-top: 56px; padding-top: 24px; border-top: 1px solid ${NAVY_LIGHT}; display: flex; align-items: center; gap: 10px; }
         .footer-text { font-size: 11px; color: rgba(122,144,184,0.4); letter-spacing: 0.08em; }
       `}</style>
 
@@ -333,23 +305,13 @@ export default function App() {
               {file && (
                 <div className="file-selected" onClick={(e) => e.stopPropagation()}>
                   📄 {file.name}
-                  <span style={{ marginLeft: 8, opacity: 0.6, fontSize: 11 }}>
-                    {(file.size / 1024).toFixed(0)} KB
-                  </span>
+                  <span style={{ marginLeft: 8, opacity: 0.6, fontSize: 11 }}>{(file.size / 1024).toFixed(0)} KB</span>
                 </div>
               )}
             </div>
 
-            <input
-              ref={inputRef}
-              type="file"
-              accept="application/pdf"
-              style={{ display: "none" }}
-              onChange={(e) => handleFile(e.target.files[0])}
-            />
-
+            <input ref={inputRef} type="file" accept="application/pdf" style={{ display: "none" }} onChange={(e) => handleFile(e.target.files[0])} />
             {error && <div className="error-box">⚠ {error}</div>}
-
             <button className="analyze-btn" disabled={!file} onClick={analyze}>
               <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
                 <circle cx="9" cy="9" r="7.5" stroke="white" strokeWidth="1.4"/>
@@ -380,7 +342,7 @@ export default function App() {
             {results.map((section, i) => (
               <div className="section" key={i}>
                 <div className="section-label">{section.label}</div>
-                <div className="section-content">{section.content}</div>
+                <div className="section-content">{renderContent(section.content)}</div>
               </div>
             ))}
             <button className="reset-btn" onClick={reset}>← Analyse Another Report</button>
@@ -395,3 +357,4 @@ export default function App() {
     </>
   );
 }
+
