@@ -301,7 +301,7 @@ export default function App() {
                 </svg>
               </div>
               <div className="upload-label">Drop your report here</div>
-              <div className="upload-hint">PDF files only — P&L, BAS, bank statements, job reports</div>
+              <div className="upload-hint">PDF files only — eg your Profit & Loss, Job Costing or Balance Sheet</div>
               {file && (
                 <div className="file-selected" onClick={(e) => e.stopPropagation()}>
                   📄 {file.name}
