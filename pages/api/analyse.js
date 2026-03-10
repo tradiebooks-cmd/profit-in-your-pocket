@@ -54,7 +54,7 @@ Use ONLY these exact markers. Keep it direct and jargon-free.`,
     });
 
     const data = await response.json();
-    if (data.error) return res.status(500).json({ error: data.error.message });
+    if (data.error) return res.status(500).json({ error: JSON.stringify(data.error) });
     const text = data.content.map((b) => b.text || '').join('\n');
 
     // Parse using exact markers
