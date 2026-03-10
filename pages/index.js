@@ -108,7 +108,7 @@ export default function App() {
         reader.readAsDataURL(file);
       });
 
-      const response = await fetch("/api/analyse", {
+      const response = await fetch("/api/analyze2", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ base64, filename: file.name }),
