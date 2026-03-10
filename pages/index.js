@@ -266,6 +266,28 @@ export default function App() {
         .error-box { margin-top: 16px; background: rgba(238,60,60,0.07); border: 1px solid rgba(238,60,60,0.2); border-radius: 4px; padding: 14px 18px; font-size: 13px; color: #FF9090; line-height: 1.6; }
         .footer { margin-top: 56px; padding-top: 24px; border-top: 1px solid ${NAVY_LIGHT}; display: flex; align-items: center; gap: 10px; }
         .footer-text { font-size: 11px; color: rgba(122,144,184,0.4); letter-spacing: 0.08em; }
+        .btn-row { display: flex; gap: 12px; margin-top: 28px; flex-wrap: wrap; }
+        .print-btn {
+          background: transparent;
+          border: 1.5px solid ${ORANGE}; color: ${ORANGE};
+          font-family: 'Barlow Condensed', sans-serif;
+          font-size: 14px; font-weight: 600;
+          letter-spacing: 0.1em; text-transform: uppercase;
+          padding: 12px 24px; border-radius: 4px; cursor: pointer; transition: all 0.15s;
+        }
+        .print-btn:hover { background: rgba(238,113,36,0.1); }
+        @media print {
+          .header, .footer, .btn-row { display: none !important; }
+          .app { padding: 0 !important; }
+          .section { border: 1px solid #ddd !important; background: white !important; color: black !important; margin-bottom: 12px; break-inside: avoid; }
+          .section-label { color: #EE7124 !important; }
+          .section-content { color: #333 !important; }
+          .results-header { background: #f5f5f5 !important; color: black !important; border-left: 4px solid #EE7124; }
+          .results-title { color: black !important; }
+          .results-filename { color: #666 !important; }
+          .results-badge { display: none !important; }
+          body { background: white !important; }
+        }
       `}</style>
 
       <div className="app">
@@ -345,7 +367,10 @@ export default function App() {
                 <div className="section-content">{renderContent(section.content)}</div>
               </div>
             ))}
-            <button className="reset-btn" onClick={reset}>← Analyse Another Report</button>
+            <div className="btn-row">
+              <button className="print-btn" onClick={() => window.print()}>🖨 Print / Save as PDF</button>
+              <button className="reset-btn" onClick={reset}>← Analyse Another Report</button>
+            </div>
           </div>
         )}
 
@@ -357,4 +382,3 @@ export default function App() {
     </>
   );
 }
-
