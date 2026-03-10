@@ -10,27 +10,7 @@ const CREAM = "#FFF8F0";
 const TEXT = "#E8EEF8";
 const MUTED = "#7A90B8";
 
-function parseAnalysis(text) {
-  const sections = [];
-  const patterns = [
-    { label: "Executive Summary", keys: ["Executive Summary", "Summary"] },
-    { label: "Key Findings", keys: ["Key Findings", "Findings"] },
-    { label: "Risks & Concerns", keys: ["Risks & Concerns", "Risks", "Concerns"] },
-    { label: "Recommendations", keys: ["Recommendations", "Recommendation"] },
-    { label: "Conclusion", keys: ["Conclusion"] },
-  ];
 
-  for (const p of patterns) {
-    const altPattern = p.keys.join("|");
-    const regex = new RegExp(
-      `(?:${altPattern})\\s*[:\\-]?\\s*([\\s\\S]*?)(?=\\n(?:Executive Summary|Key Findings|Risks|Recommendations|Conclusion)|$)`,
-      "i"
-    );
-    const match = text.match(regex);
-    if (match && match[1].trim()) {
-      sections.push({ label: p.label, content: match[1].trim() });
-    }
-  }
 
   if (sections.length === 0) {
     sections.push({ label: "Analysis", content: text.trim() });
@@ -90,7 +70,7 @@ export default function App() {
 
       const data = await response.json();
       if (data.error) throw new Error(data.error);
-      setResults(parseAnalysis(data.text));
+      setResults(data.sections);
     } catch (err) {
       setError(err.message || "Something went wrong. Please try again.");
     } finally {
